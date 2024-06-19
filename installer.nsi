@@ -21,15 +21,19 @@ Icon "icon.ico"
 !insertmacro MUI_LANGUAGE "English"
 Function .onInit
     SetShellVarContext all
-    ; Check to see if already installed
-    ReadRegStr $R0 HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SandPile" "UninstallString"
-    IfFileExists $R0 +1
-    MessageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 "The SandPile client is already installed. Do you want to uninstall it?" IDYES Uninstall IDNO Quit
 
-    Uninstall:
-    Exec $R0
-    Quit:
-    Quit
+    ClearErrors
+    ReadRegStr $0 HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SandPile" "UninstallString"
+    ${If} ${Errors}
+    ${Else}
+        MessageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 "The SandPile client is already installed. Do you want to uninstall it?" IDYES Uninstall IDNO Quit
+
+        Uninstall:
+        ReadRegStr $R0 HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SandPile" "UninstallString"
+        Exec $R0
+        Quit:
+        Quit
+    ${EndIf}
 FunctionEnd
 
 Section
