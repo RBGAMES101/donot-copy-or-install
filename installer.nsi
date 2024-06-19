@@ -21,6 +21,15 @@ Icon "icon.ico"
 !insertmacro MUI_LANGUAGE "English"
 Function .onInit
     SetShellVarContext all
+    ; Check to see if already installed
+    ReadRegStr $R0 HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SandPile" "UninstallString"
+    IfFileExists $R0 +1
+    MessageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 "The SandPile client is already installed. Do you want to uninstall it?" IDYES Uninstall IDNO Quit
+
+    Uninstall:
+    Exec $R0
+    Quit:
+    Quit
 FunctionEnd
 
 Section
@@ -55,7 +64,7 @@ Section
     DetailPrint "Successfully wrote registry keys."
     ; Download file
     DetailPrint "Downloading autoupdater.exe..."
-    inetc::get "https://sandpile.xyz/static/autoupdater.exe" "$PROFILE\AppData\Local\Programs\SandPile\autoupdater.exe"
+    inetc::get "https://sandpile.xyz/content/autoupdater.exe" "$PROFILE\AppData\Local\Programs\SandPile\autoupdater.exe"
     Pop $R0
     StrCmp $R0 "OK" 0 +2
     DetailPrint "Download successful."
